@@ -6,6 +6,8 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
 
+**Read the write-up:** [Your agent eval is silently wrong](https://laninenterline.github.io/agent-eval-harness/) — eight judges, 1,400 calls, and four ways an eval can be silently wrong.
+
 
 **Task-level evaluation and regression testing for AI agents — framework-neutral.**
 
