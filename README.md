@@ -1,0 +1,82 @@
+# agent-eval-harness
+
+**Task-level evaluation and regression testing for AI agents — framework-neutral.**
+
+Agents fail in ways unit tests never catch: they call the right tool with the
+wrong argument, finish with a plausible but wrong answer, or quietly double
+their token cost after a model swap. `aeh` treats an agent run as a **test
+case**: it ingests OpenTelemetry GenAI traces, applies a rubric, scores the
+outcome, and **fails CI when an agent regresses**.
+
+```
+trace (OTel GenAI)  ->  rubric checks  ->  judge  ->  report  ->  git diff-able JSON
+```
+
+## Why another eval tool
+
+Most agent evaluation today is either (a) a closed dashboard, or (b) a
+framework-specific SDK. `aeh` is deliberately the opposite:
+
+- **Framework-neutral** — it reads traces, not framework internals. LangGraph,
+  NVIDIA NeMo Agent Toolkit, OpenAI Agents SDK, or your own loop all produce
+  spans; `aeh` does not care which one produced them.
+- **Trace-first** — evaluation input is a real production trace, not a
+  hand-written prompt. This is what makes regression testing possible.
+- **CI-native** — `aeh run` exits non-zero on failure; `aeh diff` exits non-zero
+  on regression. It is a test runner, not a dashboard.
+- **Zero heavy dependencies** — one package, stdlib only by default. An LLM
+  judge is opt-in via any OpenAI-compatible endpoint.
+
+## Quick start
+
+```bash
+pip install -e .
+
+# run the example suite
+aeh run --cases examples/cases.jsonl --traces examples/traces/otel_sample.json
+
+# compare two runs (exit code 1 on regression)
+aeh diff before.json after.json
+```
+
+## How a case is defined
+
+```json
+{"id": "weather-agent-001",
+ "task": "Find the weather in Shanghai and summarize it",
+ "rubric": {"expect_tools": ["get_weather"],
+            "output_contains": ["Shanghai"],
+            "max_total_tokens": 2000},
+ "judge_threshold": 0.5}
+```
+
+The `id` is matched against the trace's `aeh.task.id` attribute (falling back to
+the trace id). Three kinds of checks run:
+
+1. **Deterministic rubric** — expected tools called, output contains, budget caps,
+   no error spans.
+2. **Judge** — pluggable. A zero-dependency `RuleJudge` ships by default;
+   `LLMJudge` talks to any OpenAI-compatible endpoint (`OPENAI_API_KEY`).
+3. **Aggregate** — pass rate, per-case latency and token cost, captured in a
+   JSON report that is stable enough to diff.
+
+## Where this fits
+
+The gap it fills is narrow on purpose: **business-level acceptance of an agent
+run**, not GPU profiling and not model benchmarking.
+
+| Layer | Who owns it today |
+|---|---|
+| GPU / kernel profiling | NVIDIA Nsight |
+| Model benchmarks | NeMo Evaluator, MLflow |
+| Trace transport | OpenTelemetry GenAI semconv |
+| **Task-level accept/regress** | **nobody, yet** -> this project |
+
+## Status
+
+v0.1 — OTLP JSON ingestion, deterministic rubric, rule judge, JSON/Markdown
+reports, regression diff, GitHub Action example, one adapter (NVIDIA NAT).
+
+## License
+
+Apache-2.0.

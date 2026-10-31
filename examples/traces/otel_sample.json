@@ -1,0 +1,112 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "demo-agent"}}]},
+      "scopeSpans": [
+        {
+          "scope": {"name": "agent_eval_harness.demo"},
+          "spans": [
+            {
+              "traceId": "trace-weather-001",
+              "spanId": "span-w-1",
+              "name": "chat",
+              "startTimeUnixNano": "1000000000",
+              "endTimeUnixNano": "1500000000",
+              "attributes": [
+                {"key": "aeh.task.id", "value": {"stringValue": "weather-agent-001"}},
+                {"key": "gen_ai.operation.name", "value": {"stringValue": "chat"}},
+                {"key": "gen_ai.usage.input_tokens", "value": {"intValue": "120"}},
+                {"key": "gen_ai.usage.output_tokens", "value": {"intValue": "80"}},
+                {"key": "gen_ai.completion", "value": {"stringValue": "Let me check the weather."}}
+              ]
+            },
+            {
+              "traceId": "trace-weather-001",
+              "spanId": "span-w-2",
+              "parentSpanId": "span-w-1",
+              "name": "execute_tool get_weather",
+              "startTimeUnixNano": "1500000000",
+              "endTimeUnixNano": "1600000000",
+              "attributes": [
+                {"key": "gen_ai.operation.name", "value": {"stringValue": "execute_tool"}},
+                {"key": "gen_ai.tool.name", "value": {"stringValue": "get_weather"}}
+              ]
+            },
+            {
+              "traceId": "trace-weather-001",
+              "spanId": "span-w-3",
+              "parentSpanId": "span-w-1",
+              "name": "chat",
+              "startTimeUnixNano": "1600000000",
+              "endTimeUnixNano": "2000000000",
+              "attributes": [
+                {"key": "gen_ai.operation.name", "value": {"stringValue": "chat"}},
+                {"key": "gen_ai.completion", "value": {"stringValue": "The weather in Shanghai is 22C and sunny. Summarized for the user: warm and clear."}}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "demo-agent"}}]},
+      "scopeSpans": [
+        {
+          "scope": {"name": "agent_eval_harness.demo"},
+          "spans": [
+            {
+              "traceId": "trace-review-002",
+              "spanId": "span-r-1",
+              "name": "chat",
+              "startTimeUnixNano": "0",
+              "endTimeUnixNano": "1000000000",
+              "attributes": [
+                {"key": "aeh.task.id", "value": {"stringValue": "review-002"}},
+                {"key": "gen_ai.operation.name", "value": {"stringValue": "chat"}},
+                {"key": "gen_ai.usage.input_tokens", "value": {"intValue": "80"}},
+                {"key": "gen_ai.usage.output_tokens", "value": {"intValue": "40"}},
+                {"key": "gen_ai.completion", "value": {"stringValue": "I will read the diff first."}}
+              ]
+            },
+            {
+              "traceId": "trace-review-002",
+              "spanId": "span-r-2",
+              "parentSpanId": "span-r-1",
+              "name": "execute_tool read_file",
+              "startTimeUnixNano": "1000000000",
+              "endTimeUnixNano": "1800000000",
+              "attributes": [
+                {"key": "gen_ai.operation.name", "value": {"stringValue": "execute_tool"}},
+                {"key": "gen_ai.tool.name", "value": {"stringValue": "read_file"}}
+              ]
+            },
+            {
+              "traceId": "trace-review-002",
+              "spanId": "span-r-3",
+              "parentSpanId": "span-r-1",
+              "name": "execute_tool post_comment",
+              "startTimeUnixNano": "1800000000",
+              "endTimeUnixNano": "2600000000",
+              "attributes": [
+                {"key": "gen_ai.operation.name", "value": {"stringValue": "execute_tool"}},
+                {"key": "gen_ai.tool.name", "value": {"stringValue": "post_comment"}}
+              ]
+            },
+            {
+              "traceId": "trace-review-002",
+              "spanId": "span-r-4",
+              "parentSpanId": "span-r-1",
+              "name": "chat",
+              "startTimeUnixNano": "2600000000",
+              "endTimeUnixNano": "3000000000",
+              "attributes": [
+                {"key": "gen_ai.operation.name", "value": {"stringValue": "chat"}},
+                {"key": "gen_ai.completion", "value": {"stringValue": "Reviewed the pull request and listed two issues: missing tests, unclear error handling."}}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

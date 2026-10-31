@@ -1,0 +1,2 @@
+{"id": "weather-agent-001", "task": "Find the weather in Shanghai and summarize it for the user", "rubric": {"expect_tools": ["get_weather"], "output_contains": ["Shanghai"], "max_total_tokens": 2000}, "judge_threshold": 0.5}
+{"id": "review-002", "task": "Review the pull request and list at least two issues", "rubric": {"expect_tools": ["read_file", "post_comment"], "output_contains": ["issues"], "max_duration_ms": 5000, "forbid_errors": false}, "judge_threshold": 0.5}
