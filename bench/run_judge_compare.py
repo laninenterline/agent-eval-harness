@@ -18,6 +18,15 @@ DATA = Path(__file__).resolve().parent / "data"
 THRESHOLD = 0.5
 WORKERS = 3
 
+# model -> (base_url, key env var)
+PROVIDERS = {
+    "deepseek-v4-pro": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY"),
+    "deepseek-flash": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY"),
+    "glm-5.3": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY"),
+    "glm-5.3-flash": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY"),
+    "glm-4.6": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY"),
+}
+
 
 def metrics(flagged: set[str], truth: set[str]) -> dict:
     tp = len(flagged & truth)
@@ -44,10 +53,6 @@ def judge_cases(cases, traces, judge):
 
 
 def main() -> int:
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY not set", file=sys.stderr)
-        return 2
-
     models = sys.argv[1:] or ["deepseek-v4-pro", "deepseek-flash"]
 
     cases = load_cases(DATA / "cases.jsonl")
@@ -71,7 +76,12 @@ def main() -> int:
 
     rows = []
     for model in models:
-        judge = LLMJudge(model=model)
+        base_url, key_env = PROVIDERS.get(model, (None, "OPENAI_API_KEY"))
+        api_key = os.environ.get(key_env) or os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            print(f"skipping {model}: {key_env} not set", file=sys.stderr)
+            continue
+        judge = LLMJudge(model=model, base_url=base_url, api_key=api_key)
         base_judged = judge_cases(cases, base_traces, judge)
         pending = [c for c in cases if not deterministic[c.id]]
         deg_judged = judge_cases(pending, deg_traces, judge)
@@ -105,7 +115,11 @@ def main() -> int:
               f"{r['baseline_false_alarms']:7d} {r['semantic_caught']:4d}/{r['semantic_total']:<4d} "
               f"{r['total_tokens']:8d} {r['latency_p50_ms']:7.0f} {r['latency_p95_ms']:7.0f}")
 
-    (DATA / "judge_compare_result.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")
+    result_path = DATA / "judge_compare_result.json"
+    existing = json.loads(result_path.read_text()) if result_path.exists() else []
+    replaced = {row["model"] for row in rows}
+    merged = [row for row in existing if row["model"] not in replaced] + rows
+    result_path.write_text(json.dumps(merged, indent=2), encoding="utf-8")
     print(f"\nwritten to {DATA / 'judge_compare_result.json'}")
     return 0
 

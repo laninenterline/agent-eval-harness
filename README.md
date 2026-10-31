@@ -93,11 +93,13 @@ semantic):
 |---|---|---|---|
 | deterministic rubric only | 75% (30/40) | 100% | 0 |
 | rubric + `deepseek-v4-pro` judge | **100% (40/40)** | 100% | 0 |
+| rubric + `glm-5.3` / `glm-5.3-flash` judge | **100% (40/40)** | 100% | 0 |
 | rubric + `deepseek-flash` judge | 98% (39/40) | 100% | 0 |
 | naive "output non-empty" | 0% | — | 0 |
 
 Naive checks catch nothing. The deterministic layer is free and precise. The
-judge buys the semantic tail with zero false alarms. Note: reasoning models
+judge buys the semantic tail with zero false alarms across four judge models
+(DeepSeek and GLM). Note: reasoning models
 consume `max_tokens` with chain-of-thought, so a small budget returns empty
 content that looks like failure — see [`bench/README.md`](bench/README.md).
 

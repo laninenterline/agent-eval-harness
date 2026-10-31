@@ -34,5 +34,41 @@
     "total_tokens": 87273,
     "latency_p50_ms": 1560.1,
     "latency_p95_ms": 3011.1
+  },
+  {
+    "model": "glm-5.3",
+    "detected": 40,
+    "false_alarms": 0,
+    "missed": 0,
+    "recall": 1.0,
+    "precision": 1.0,
+    "baseline_false_alarms": 0,
+    "semantic_caught": 10,
+    "semantic_total": 10,
+    "calls": 210,
+    "errors": 0,
+    "prompt_tokens": 42322,
+    "completion_tokens": 48382,
+    "total_tokens": 90704,
+    "latency_p50_ms": 3293.5,
+    "latency_p95_ms": 6075.1
+  },
+  {
+    "model": "glm-5.3-flash",
+    "detected": 40,
+    "false_alarms": 0,
+    "missed": 0,
+    "recall": 1.0,
+    "precision": 1.0,
+    "baseline_false_alarms": 0,
+    "semantic_caught": 10,
+    "semantic_total": 10,
+    "calls": 210,
+    "errors": 0,
+    "prompt_tokens": 42322,
+    "completion_tokens": 41677,
+    "total_tokens": 83999,
+    "latency_p50_ms": 3120.6,
+    "latency_p95_ms": 6500.7
   }
 ]

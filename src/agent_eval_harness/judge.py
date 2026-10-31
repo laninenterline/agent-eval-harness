@@ -84,9 +84,10 @@ class LLMJudge:
         "Final output: {output}\n"
     )
 
-    def __init__(self, model: str | None = None, timeout: int = 120) -> None:
-        self.base_url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
-        self.api_key = os.environ.get("OPENAI_API_KEY", "")
+    def __init__(self, model: str | None = None, timeout: int = 120,
+                 base_url: str | None = None, api_key: str | None = None) -> None:
+        self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.model = model or os.environ.get("AEH_JUDGE_MODEL", "gpt-4o-mini")
         self.max_tokens = int(os.environ.get("AEH_JUDGE_MAX_TOKENS", "1500"))
         self.timeout = timeout

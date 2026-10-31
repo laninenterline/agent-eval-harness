@@ -53,13 +53,26 @@ naive: output non-empty                0             0      40       0%         
 
 ### Judge model comparison
 
-| model | recall | precision | semantic caught | tokens | p50 latency | p95 latency |
+Four models, 210 judge calls each (840 total), identical prompts and dataset:
+
+| model | recall | precision | semantic caught | tokens | p50 | p95 |
 |---|---|---|---|---|---|---|
 | `deepseek-v4-pro` | 100% | 100% | 10/10 | 94,951 | 2,200 ms | 3,798 ms |
-| `deepseek-flash` | 98% | 100% | 9/10 | 87,273 | 1,560 ms | 3,011 ms |
+| `deepseek-flash` | 98% | 100% | 9/10 | 87,273 | **1,560 ms** | 3,011 ms |
+| `glm-5.3` | 100% | 100% | 10/10 | 90,704 | 3,294 ms | 6,075 ms |
+| `glm-5.3-flash` | 100% | 100% | 10/10 | **83,999** | 3,121 ms | 6,501 ms |
 
-`v4-pro` buys the last semantic case for ~40% more latency. `flash` is the better
-default: same precision, 0 false alarms, 1/3 faster.
+Every model reaches **100% precision with zero false alarms**; they differ only
+on recall of the semantic tail and on cost/latency:
+
+- **`deepseek-flash`** — best default: fastest here and 98% recall.
+- **`deepseek-v4-pro`** — full recall at ~2.3x the token cost of flash, still fast.
+- **`glm-5.3` / `glm-5.3-flash`** — full recall; `glm-5.3-flash` is the most
+  token-efficient judge overall. Slower from this environment.
+
+Caveat: latency is measured from a Termux/Android proot environment over the
+public internet, so it reflects network path as much as model speed. Re-measure
+in your own CI region before picking on latency.
 
 ### A trap worth documenting
 
