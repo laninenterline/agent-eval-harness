@@ -12,29 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from agent_eval_harness.cli import load_cases, load_traces  # noqa: E402
-from agent_eval_harness.judge import LLMJudge  # noqa: E402
+from agent_eval_harness.providers import make_judge  # noqa: E402
 
 DATA = Path(__file__).resolve().parent / "data"
 THRESHOLD = 0.5
 WORKERS = 4
 
 # model -> (base_url, key env var)
-PROVIDERS = {
-    # model -> (base_url, key env var, temperature)
-    "deepseek-v4-pro": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY", 0.0),
-    "deepseek-flash": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY", 0.0),
-    "glm-5.3": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY", 0.0),
-    "glm-5.3-flash": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY", 0.0),
-    "glm-4.6": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY", 0.0),
-    # Moonshot rejects temperature != 1 for kimi-k2.6
-    "kimi-k2.6": ("https://api.moonshot.cn/v1", "KIMI_API_KEY", 1.0),
-    # Gemini OpenAI-compat endpoint needs the "models/" prefix in the model id
-    "models/gemini-3.1-flash-lite": ("https://generativelanguage.googleapis.com/v1beta/openai",
-                                     "GEMINI_API_KEY", 0.0),
-    "nvidia/nemotron-3.5-bolt-e4b": ("https://integrate.api.nvidia.com/v1", "NVIDIA_API_KEY", 0.0),
-}
-
-
 def metrics(flagged: set[str], truth: set[str]) -> dict:
     tp = len(flagged & truth)
     fp = len(flagged - truth)
@@ -83,12 +67,11 @@ def main() -> int:
 
     rows = []
     for model in models:
-        base_url, key_env, temperature = PROVIDERS.get(model, (None, "OPENAI_API_KEY", 0.0))
-        api_key = os.environ.get(key_env) or os.environ.get("OPENAI_API_KEY", "")
-        if not api_key:
-            print(f"skipping {model}: {key_env} not set", file=sys.stderr)
+        try:
+            judge = make_judge(model)
+        except RuntimeError as error:
+            print(f"skipping {model}: {error}", file=sys.stderr)
             continue
-        judge = LLMJudge(model=model, base_url=base_url, api_key=api_key, temperature=temperature)
         base_judged = judge_cases(cases, base_traces, judge)
         pending = [c for c in cases if not deterministic[c.id]]
         deg_judged = judge_cases(pending, deg_traces, judge)
