@@ -86,10 +86,18 @@ run**, not GPU profiling and not model benchmarking.
 
 ## Benchmark
 
-On a 120-task synthetic model-swap dataset (40 regressions: 30 structural, 10
-semantic), the deterministic layer finds **30/40 with zero false alarms**, while
-naive output checks find **0/40**. The 10 missed cases are semantic — that is the
-bucket the judge layer is for. Details: [`bench/README.md`](bench/README.md).
+120-task synthetic model-swap dataset, 40 real regressions (30 structural, 10
+semantic):
+
+| detector | recall | precision | false alarms |
+|---|---|---|---|
+| deterministic rubric only | 75% (30/40) | 100% | 0 |
+| rubric + LLM judge (deepseek-v4-pro) | **100% (40/40)** | 85% | 7 |
+| naive "output non-empty" | 0% | — | 0 |
+
+Naive checks catch nothing. The deterministic layer is free and precise. The
+judge buys the semantic tail at ~9% false alarms. Details:
+[`bench/README.md`](bench/README.md).
 
 ## Status
 

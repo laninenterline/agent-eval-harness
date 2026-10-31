@@ -64,7 +64,7 @@ class RunReport:
 
 def run_case(case: EvalCase, trace: Trace, judge: Judge) -> CaseResult:
     checks = case.rubric.evaluate(trace)
-    verdict = judge.evaluate(case.task, trace)
+    verdict = judge.evaluate(case.task, trace, case.rubric.output_contains)
     passed = all(check.passed for check in checks) and verdict.score >= case.judge_threshold
     return CaseResult(
         case_id=case.id,

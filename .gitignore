@@ -6,3 +6,4 @@ dist/
 .venv/
 aeh-report*.json
 .pytest_cache/
+.env
