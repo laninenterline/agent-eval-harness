@@ -85,11 +85,13 @@ class LLMJudge:
     )
 
     def __init__(self, model: str | None = None, timeout: int = 120,
-                 base_url: str | None = None, api_key: str | None = None) -> None:
+                 base_url: str | None = None, api_key: str | None = None,
+                 temperature: float = 0.0) -> None:
         self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.model = model or os.environ.get("AEH_JUDGE_MODEL", "gpt-4o-mini")
         self.max_tokens = int(os.environ.get("AEH_JUDGE_MAX_TOKENS", "1500"))
+        self.temperature = temperature
         self.timeout = timeout
         self._lock = threading.Lock()
         self.calls = 0
@@ -122,12 +124,12 @@ class LLMJudge:
         body = {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0,
+            "temperature": self.temperature,
             "max_tokens": self.max_tokens,
             "response_format": {"type": "json_object"},
         }
         last_error: Exception | None = None
-        for attempt in range(4):
+        for attempt in range(6):
             if attempt:
                 time.sleep(0.3 * (2 ** (attempt - 1)))
             started = time.perf_counter()
@@ -148,6 +150,12 @@ class LLMJudge:
                     self.completion_tokens += int(usage.get("completion_tokens", 0) or 0)
                     self.latencies_ms.append(elapsed_ms)
                 return Verdict(float(parsed.get("score", 0.0)), str(parsed.get("rationale", "")))
+            except urllib.error.HTTPError as error:
+                last_error = error
+                if error.code == 429:
+                    retry_after = error.headers.get("Retry-After")
+                    wait = float(retry_after) if retry_after else 2.0
+                    time.sleep(min(wait, 8.0))
             except (urllib.error.URLError, TimeoutError, OSError, KeyError, ValueError, json.JSONDecodeError) as error:
                 last_error = error
         with self._lock:

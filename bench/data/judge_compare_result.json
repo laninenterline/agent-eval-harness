@@ -70,5 +70,23 @@
     "total_tokens": 83999,
     "latency_p50_ms": 3120.6,
     "latency_p95_ms": 6500.7
+  },
+  {
+    "model": "kimi-k2.6",
+    "detected": 40,
+    "false_alarms": 74,
+    "missed": 0,
+    "recall": 1.0,
+    "precision": 0.3508771929824561,
+    "baseline_false_alarms": 109,
+    "semantic_caught": 10,
+    "semantic_total": 10,
+    "calls": 19,
+    "errors": 191,
+    "prompt_tokens": 3632,
+    "completion_tokens": 8952,
+    "total_tokens": 12584,
+    "latency_p50_ms": 15592.8,
+    "latency_p95_ms": 25671.7
   }
 ]

@@ -53,26 +53,29 @@ naive: output non-empty                0             0      40       0%         
 
 ### Judge model comparison
 
-Four models, 210 judge calls each (840 total), identical prompts and dataset:
+| model | provider | recall | precision | false alarms | tokens | p50 | suite |
+|---|---|---|---|---|---|---|---|
+| `deepseek-v4-pro` | DeepSeek | 100% | 100% | 0 | 94,951 | 2,200 ms | full (210 calls) |
+| `deepseek-flash` | DeepSeek | 98% | 100% | 0 | 87,273 | **1,560 ms** | full (210 calls) |
+| `glm-5.3` | Zhipu | 100% | 100% | 0 | 90,704 | 3,294 ms | full (210 calls) |
+| `glm-5.3-flash` | Zhipu | 100% | 100% | 0 | **83,999** | 3,121 ms | full (210 calls) |
+| `kimi-k2.6` | Moonshot | 10/10 semantic | — | 0/10 | 14,707 | 19,295 ms | subset (20 calls) |
 
-| model | recall | precision | semantic caught | tokens | p50 | p95 |
-|---|---|---|---|---|---|---|
-| `deepseek-v4-pro` | 100% | 100% | 10/10 | 94,951 | 2,200 ms | 3,798 ms |
-| `deepseek-flash` | 98% | 100% | 9/10 | 87,273 | **1,560 ms** | 3,011 ms |
-| `glm-5.3` | 100% | 100% | 10/10 | 90,704 | 3,294 ms | 6,075 ms |
-| `glm-5.3-flash` | 100% | 100% | 10/10 | **83,999** | 3,121 ms | 6,501 ms |
+All five judges reach **100% precision with zero false alarms** on the cases they
+ran. They differ on recall of the semantic tail and, heavily, on operational fit:
 
-Every model reaches **100% precision with zero false alarms**; they differ only
-on recall of the semantic tail and on cost/latency:
+- **`deepseek-flash`** — best default: fastest, 98% recall, zero false alarms.
+- **`deepseek-v4-pro` / `glm-5.3` / `glm-5.3-flash`** — full recall; `glm-5.3-flash`
+  is the most token-efficient. Fine for nightly runs or second-opinion gating.
+- **`kimi-k2.6`** — quality is perfect on the subset (0/10 false alarms, 10/10
+  semantic caught) but the account is capped at **3 requests/minute** and each
+  call takes **~19–30 s**. The full 210-call suite would take ~70 minutes, so only
+  a 20-call subset was measured. Kimi is also the only model here that rejects
+  `temperature != 1`, so its scores are non-deterministic run to run.
 
-- **`deepseek-flash`** — best default: fastest here and 98% recall.
-- **`deepseek-v4-pro`** — full recall at ~2.3x the token cost of flash, still fast.
-- **`glm-5.3` / `glm-5.3-flash`** — full recall; `glm-5.3-flash` is the most
-  token-efficient judge overall. Slower from this environment.
-
-Caveat: latency is measured from a Termux/Android proot environment over the
-public internet, so it reflects network path as much as model speed. Re-measure
-in your own CI region before picking on latency.
+**Operational lesson:** judge selection is not only about accuracy. Rate limits,
+latency and determinism decide whether a judge can live in CI. A model that is
+perfect on quality but costs 20 s and 3 RPM is a manual tool, not a CI gate.
 
 ### A trap worth documenting
 

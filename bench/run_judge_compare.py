@@ -20,11 +20,14 @@ WORKERS = 3
 
 # model -> (base_url, key env var)
 PROVIDERS = {
-    "deepseek-v4-pro": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY"),
-    "deepseek-flash": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY"),
-    "glm-5.3": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY"),
-    "glm-5.3-flash": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY"),
-    "glm-4.6": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY"),
+    # model -> (base_url, key env var, temperature)
+    "deepseek-v4-pro": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY", 0.0),
+    "deepseek-flash": ("https://api.deepseek.com/v1", "DEEPSEEK_API_KEY", 0.0),
+    "glm-5.3": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY", 0.0),
+    "glm-5.3-flash": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY", 0.0),
+    "glm-4.6": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY", 0.0),
+    # Moonshot rejects temperature != 1 for kimi-k2.6
+    "kimi-k2.6": ("https://api.moonshot.cn/v1", "KIMI_API_KEY", 1.0),
 }
 
 
@@ -76,12 +79,12 @@ def main() -> int:
 
     rows = []
     for model in models:
-        base_url, key_env = PROVIDERS.get(model, (None, "OPENAI_API_KEY"))
+        base_url, key_env, temperature = PROVIDERS.get(model, (None, "OPENAI_API_KEY", 0.0))
         api_key = os.environ.get(key_env) or os.environ.get("OPENAI_API_KEY", "")
         if not api_key:
             print(f"skipping {model}: {key_env} not set", file=sys.stderr)
             continue
-        judge = LLMJudge(model=model, base_url=base_url, api_key=api_key)
+        judge = LLMJudge(model=model, base_url=base_url, api_key=api_key, temperature=temperature)
         base_judged = judge_cases(cases, base_traces, judge)
         pending = [c for c in cases if not deterministic[c.id]]
         deg_judged = judge_cases(pending, deg_traces, judge)

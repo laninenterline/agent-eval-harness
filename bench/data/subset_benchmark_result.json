@@ -1,0 +1,17 @@
+{
+  "model": "kimi-k2.6",
+  "subset": {
+    "healthy": 10,
+    "semantic": 10
+  },
+  "false_alarms": 0,
+  "semantic_caught": 10,
+  "semantic_total": 10,
+  "calls": 20,
+  "errors": 0,
+  "prompt_tokens": 3910,
+  "completion_tokens": 10797,
+  "total_tokens": 14707,
+  "latency_p50_ms": 19295.0,
+  "latency_p95_ms": 30032.1
+}
