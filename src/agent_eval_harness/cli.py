@@ -56,7 +56,8 @@ def cmd_run(args: argparse.Namespace) -> int:
     report = run(cases, traces, judge)
     output = Path(args.out)
     write_json(report, output)
-    print(to_markdown(report))
+    from .report import to_plain
+    print(to_plain(report) if args.format == "plain" else to_markdown(report))
     print(f"report written to {output}")
     return 0 if report.all_passed else 1
 
@@ -80,6 +81,8 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--cases", required=True, help="cases file (.jsonl or .json)")
     run_parser.add_argument("--traces", required=True, help="OTLP JSON file or directory")
     run_parser.add_argument("--out", default="aeh-report.json", help="report output path")
+    run_parser.add_argument("--format", choices=["markdown", "plain"], default="markdown",
+                            help="console report format")
     run_parser.add_argument("--judge-model", default=None,
                             help="LLM judge model, e.g. deepseek-flash or nvidia/nemotron-3.5-bolt-e4b")
     run_parser.add_argument("--judge-temperature", type=float, default=None,
@@ -102,6 +105,8 @@ def build_parser() -> argparse.ArgumentParser:
     demo_parser = subparsers.add_parser("demo", help="run the built-in zero-config demo")
     demo_parser.add_argument("--out", default=None, help="write the JSON report here")
     demo_parser.add_argument("--judge-model", default=None, help="use an LLM judge instead")
+    demo_parser.add_argument("--format", choices=["markdown", "plain"], default="markdown",
+                             help="console report format")
     demo_parser.set_defaults(func=cmd_demo)
     return parser
 
@@ -125,8 +130,10 @@ def cmd_demo(args: argparse.Namespace) -> int:
     else:
         report = build_report()
 
+    from .report import to_plain
+
     print(intro())
-    print(render(report))
+    print(to_plain(report) if args.format == "plain" else render(report))
     if args.out:
         from .report import write_json
         write_json(report, args.out)

@@ -1,6 +1,6 @@
 {
   "name": "aehcli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Framework-neutral, task-level evaluation and regression harness for AI agents",
   "keywords": ["ai", "agents", "evaluation", "evals", "opentelemetry", "observability", "ci", "llm"],
   "license": "Apache-2.0",
