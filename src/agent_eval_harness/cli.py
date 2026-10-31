@@ -98,7 +98,40 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("judges", help="list known judge providers").set_defaults(
         func=cmd_judges
     )
+
+    demo_parser = subparsers.add_parser("demo", help="run the built-in zero-config demo")
+    demo_parser.add_argument("--out", default=None, help="write the JSON report here")
+    demo_parser.add_argument("--judge-model", default=None, help="use an LLM judge instead")
+    demo_parser.set_defaults(func=cmd_demo)
     return parser
+
+
+def cmd_demo(args: argparse.Namespace) -> int:
+    from .demo import build_report, intro
+    from .report import to_markdown as render
+
+    if args.judge_model:
+        cases = build_report().cases  # warm path, same dataset
+        from .demo import CASES, _SPANS  # noqa: PLC2701
+        from .otel import parse_otlp_json
+        from .runner import EvalCase, run
+        from .providers import make_judge
+
+        parsed_cases = [EvalCase.from_dict(case) for case in CASES]
+        traces = {trace.task_id: trace for trace in parse_otlp_json({"resourceSpans": [
+            {"scopeSpans": [{"scope": {"name": "aeh-demo"}, "spans": _SPANS}]}
+        ]})}
+        report = run(parsed_cases, traces, make_judge(args.judge_model))
+    else:
+        report = build_report()
+
+    print(intro())
+    print(render(report))
+    if args.out:
+        from .report import write_json
+        write_json(report, args.out)
+        print(f"report written to {args.out}")
+    return 0
 
 
 def cmd_judges(_args: argparse.Namespace) -> int:

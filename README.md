@@ -47,15 +47,25 @@ framework-specific SDK. `aeh` is deliberately the opposite:
 ## Quick start
 
 ```bash
-pip install aehcli      # from PyPI (after first release)
-# or, from source:
-pip install -e .
+pip install aehcli
+aeh demo        # built-in 3-task demo: no files, no network, no API keys
+```
 
-# run the example suite
-aeh run --cases examples/cases.jsonl --traces examples/traces/otel_sample.json
+`aeh demo` runs two healthy agents and one that regressed on token budget, so
+you can see exactly what a failure looks like:
 
-# compare two runs (exit code 1 on regression)
-aeh diff before.json after.json
+```
+| case         | result | ms   | tokens | judge | first failing check |
+| demo-weather | PASS   | 1400 | 180    | 0.89  |                     |
+| demo-review  | PASS   | 3200 | 120    | 0.89  |                     |
+| demo-budget  | FAIL   | 2400 | 1800   | 0.56  | tokens              |
+```
+
+Then point it at your own traces:
+
+```bash
+aeh run  --cases cases.jsonl --traces ./my-traces --judge-model deepseek-flash
+aeh diff before.json after.json     # exits 1 on regression
 ```
 
 ## How a case is defined

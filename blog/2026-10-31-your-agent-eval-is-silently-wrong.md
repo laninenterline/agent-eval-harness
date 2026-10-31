@@ -267,11 +267,14 @@ OpenTelemetry GenAI or OpenInference traces, applies a rubric, optionally calls 
 judge from a provider registry, and emits a JSON report you can diff in CI.
 
 ```bash
-pip install -e .
-aeh run --cases examples/cases.jsonl --traces examples/traces \
-        --judge-model nvidia/nemotron-3.5-bolt-e4b
+pip install aehcli
+aeh demo        # built-in demo, no keys needed
+aeh run --cases cases.jsonl --traces ./traces --judge-model nvidia/nemotron-3.5-bolt-e4b
 aeh diff before.json after.json     # exits 1 on regression
 ```
+
+Also available as `npx aehcli`, `brew install laninenterline/tap/aehcli`, and
+`docker run ghcr.io/laninenterline/agent-eval-harness:0.1.1`.
 
 - 25 unit tests
 - `aeh judges` lists known providers
