@@ -1,5 +1,10 @@
 # agent-eval-harness
 
+[![tests](https://github.com/laninenterline/agent-eval-harness/actions/workflows/aeh.yml/badge.svg)](https://github.com/laninenterline/agent-eval-harness/actions/workflows/aeh.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
+
+
 **Task-level evaluation and regression testing for AI agents — framework-neutral.**
 
 Agents fail in ways unit tests never catch: they call the right tool with the
@@ -30,6 +35,8 @@ framework-specific SDK. `aeh` is deliberately the opposite:
 ## Quick start
 
 ```bash
+pip install agent-eval-kit      # from PyPI (after first release)
+# or, from source:
 pip install -e .
 
 # run the example suite
