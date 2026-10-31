@@ -108,6 +108,11 @@ judge buys the semantic tail with zero false alarms across six judge models
 consume `max_tokens` with chain-of-thought, so a small budget returns empty
 content that looks like failure — see [`bench/README.md`](bench/README.md).
 
+## Writing
+
+- [Your agent eval is silently wrong](blog/2026-10-31-your-agent-eval-is-silently-wrong.md)
+  — eight judges, 1,400 calls, and four ways an eval can be silently wrong.
+
 ## Status
 
 
