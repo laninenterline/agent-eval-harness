@@ -53,38 +53,40 @@ naive: output non-empty                0             0      40       0%         
 
 ### Judge model comparison
 
-| model | provider | recall | precision | false alarms | semantic | tokens | p50 | errors |
+| model | provider | recall | precision | false alarms | semantic | tokens | p50 | p95 |
 |---|---|---|---|---|---|---|---|---|
-| `deepseek-v4-pro` | DeepSeek | 100% | 100% | 0 | 10/10 | 94,951 | 2,200 ms | 0 |
-| `deepseek-flash` | DeepSeek | 98% | 100% | 0 | 9/10 | 87,273 | **1,560 ms** | 0 |
-| `glm-5.3` | Zhipu | 100% | 100% | 0 | 10/10 | 90,704 | 3,294 ms | 0 |
-| `glm-5.3-flash` | Zhipu | 100% | 100% | 0 | 10/10 | **83,999** | 3,121 ms | 0 |
-| `gemini-3.1-flash-lite` | Google | 85% | 100% | 0 | 4/10 | **47,508** | 2,860 ms | 15 |
-| `kimi-k2.6` | Moonshot | subset | — | 0/10 | 10/10 | 14,707 | 19,295 ms | 0 (20 calls) |
+| **`nvidia/nemotron-3.5-bolt-e4b`** | NVIDIA | **100%** | **100%** | 0 | 10/10 | 52,588 | **1,449 ms** | 3,541 ms |
+| `deepseek-flash` | DeepSeek | 98% | 100% | 0 | 9/10 | 87,273 | 1,560 ms | 3,011 ms |
+| `deepseek-v4-pro` | DeepSeek | 100% | 100% | 0 | 10/10 | 94,951 | 2,200 ms | 3,798 ms |
+| `gemini-3.1-flash-lite` | Google | 85% | 100% | 0 | 4/10 | 47,508 | 2,860 ms | 24,023 ms |
+| `glm-5.3-flash` | Zhipu | 100% | 100% | 0 | 10/10 | 83,999 | 3,121 ms | 6,501 ms |
+| `glm-5.3` | Zhipu | 100% | 100% | 0 | 10/10 | 90,704 | 3,294 ms | 6,075 ms |
+| `kimi-k2.6` | Moonshot | subset | — | 0/10 | 10/10 | 14,707 | 19,295 ms | 25,672 ms |
 
 Findings:
 
-- **Zero false alarms everywhere.** No judge, on any provider, flagged a healthy
-  run. The differences are entirely about how much of the *semantic* tail each
-  model notices.
-- **`deepseek-flash`** — best default: fastest, 98% recall, zero false alarms.
-- **`glm-5.3-flash`** — full recall and the most token-efficient of the full-suite
-  models. Good for nightly runs.
-- **`gemini-3.1-flash-lite`** — cheapest by tokens, but only catches 4/10 semantic
-  regressions. It is *too forgiving*: a perfectly calibrated judge that never
-  fires is useless. Note: the account also hit rate limits (15 failed calls were
-  excluded from scoring, not counted as failures — see below).
-- **`kimi-k2.6`** — quality is perfect on the subset (0/10 false alarms, 10/10
-  semantic) but the account is capped at **3 requests/minute** and each call
-  takes **~19–30 s**; the full suite would take ~70 min. Kimi also rejects
-  `temperature != 1`, so its verdicts are non-deterministic.
-- **`gemini-3.8-flash`** (newest) timed out at >180 s per call in this
-  environment and could not be evaluated at all.
+- **The winner is NVIDIA's own model.** `nvidia/nemotron-3.5-bolt-e4b` gets
+  **100% recall, 100% precision, zero false alarms, at the lowest latency
+  (1,449 ms p50) and second-lowest token cost**. On this benchmark, the best
+  judge available is hosted by the company this project is aimed at.
+- **Zero false alarms everywhere.** No judge flagged a healthy run. The
+  differences are entirely about how much of the *semantic* tail each model
+  notices.
+- **`deepseek-flash`** — best fallback: fastest of the DeepSeek pair, 98% recall.
+- **`glm-5.3-flash` / `glm-5.3`** — full recall, moderate cost; good for nightly
+  or second-opinion runs.
+- **`gemini-3.1-flash-lite`** — cheapest tokens but only **4/10** semantic
+  recall. Perfectly calibrated judges that never fire are worse than none: they
+  manufacture false confidence. (Its account also hit rate limits; the 15 failed
+  calls were excluded, not scored as failures.)
+- **`kimi-k2.6`** — perfect quality on the subset, but **3 RPM** and **~19–30 s**
+  per call make it a manual tool, not a CI gate. It also rejects
+  `temperature != 1`, so verdicts are non-deterministic.
+- **`gemini-3.8-flash`** timed out at >180 s per call and could not be evaluated.
 
-**Operational lesson:** judge selection is accuracy × reliability, not accuracy
-alone. A judge that is perfect but rate-limited to 3 RPM is a manual tool; a
-judge that is cheap but blind to the semantic tail is worse than no judge,
-because it creates false confidence.
+**Operational lesson:** judge selection is accuracy × reliability × cost, not
+accuracy alone. A perfect judge at 3 RPM is a manual tool; a cheap judge that
+misses 60% of semantic regressions is worse than no judge.
 
 ### Three traps worth documenting
 

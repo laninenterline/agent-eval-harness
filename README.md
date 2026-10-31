@@ -97,12 +97,13 @@ semantic):
 | rubric + `deepseek-flash` judge | 98% (39/40) | 100% | 0 |
 | rubric + `glm-5.3-flash` judge | **100% (40/40)** | 100% | 0 |
 | rubric + `gemini-3.1-flash-lite` judge | 85% (34/40) | 100% | 0 |
+| rubric + `nvidia/nemotron-3.5-bolt-e4b` judge | **100% (40/40)** | 100% | 0 |
 | rubric + `kimi-k2.6` judge (subset, rate-limited) | 10/10 semantic | — | 0/10 |
 | naive "output non-empty" | 0% | — | 0 |
 
 Naive checks catch nothing. The deterministic layer is free and precise. The
-judge buys the semantic tail with zero false alarms across four judge models
-(DeepSeek and GLM). Note: reasoning models
+judge buys the semantic tail with zero false alarms across six judge models
+(DeepSeek, GLM, Google, Moonshot, NVIDIA). Note: reasoning models
 consume `max_tokens` with chain-of-thought, so a small budget returns empty
 content that looks like failure — see [`bench/README.md`](bench/README.md).
 

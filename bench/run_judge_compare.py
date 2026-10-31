@@ -16,7 +16,7 @@ from agent_eval_harness.judge import LLMJudge  # noqa: E402
 
 DATA = Path(__file__).resolve().parent / "data"
 THRESHOLD = 0.5
-WORKERS = 2
+WORKERS = 4
 
 # model -> (base_url, key env var)
 PROVIDERS = {
@@ -31,6 +31,7 @@ PROVIDERS = {
     # Gemini OpenAI-compat endpoint needs the "models/" prefix in the model id
     "models/gemini-3.1-flash-lite": ("https://generativelanguage.googleapis.com/v1beta/openai",
                                      "GEMINI_API_KEY", 0.0),
+    "nvidia/nemotron-3.5-bolt-e4b": ("https://integrate.api.nvidia.com/v1", "NVIDIA_API_KEY", 0.0),
 }
 
 

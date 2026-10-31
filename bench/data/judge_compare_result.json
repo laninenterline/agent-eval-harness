@@ -90,5 +90,25 @@
     "total_tokens": 47508,
     "latency_p50_ms": 2859.5,
     "latency_p95_ms": 24022.9
+  },
+  {
+    "model": "nvidia/nemotron-3.5-bolt-e4b",
+    "detected": 40,
+    "false_alarms": 0,
+    "missed": 0,
+    "recall": 1.0,
+    "precision": 1.0,
+    "baseline_false_alarms": 0,
+    "semantic_caught": 10,
+    "semantic_total": 10,
+    "judge_errors": 0,
+    "judged_ok": 210,
+    "calls": 210,
+    "errors": 0,
+    "prompt_tokens": 45260,
+    "completion_tokens": 7328,
+    "total_tokens": 52588,
+    "latency_p50_ms": 1449.1,
+    "latency_p95_ms": 3540.6
   }
 ]
