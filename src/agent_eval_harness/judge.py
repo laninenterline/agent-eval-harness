@@ -140,7 +140,13 @@ class LLMJudge:
                 choice = payload["choices"][0]
                 if choice.get("finish_reason") == "length":
                     raise ValueError("judge response truncated by max_tokens (reasoning budget)")
-                content = (choice["message"].get("content") or "").strip()
+                message = choice["message"]
+                content = (message.get("content") or "").strip()
+                if not content:
+                    # Some providers (e.g. NVIDIA-hosted deepseek-v4.1-flash in
+                    # JSON mode) put the answer in reasoning_content and leave
+                    # content null. Accept it rather than discarding a valid verdict.
+                    content = (message.get("reasoning_content") or "").strip()
                 if not content:
                     raise ValueError("empty judge response")
                 parsed = extract_json(content)

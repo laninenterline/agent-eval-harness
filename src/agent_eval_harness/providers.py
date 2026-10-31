@@ -66,6 +66,7 @@ PROVIDERS: dict[str, Provider] = {
         model="deepseek-ai/deepseek-v4.1-flash",
         base_url="https://integrate.api.nvidia.com/v1",
         key_env="NVIDIA_API_KEY",
+        max_tokens=2000,
     ),
     "kimi-k2.6": Provider(
         model="kimi-k2.6",
