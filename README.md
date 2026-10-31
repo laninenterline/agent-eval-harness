@@ -139,7 +139,7 @@ content that looks like failure — see [`bench/README.md`](bench/README.md).
 
 ## Writing
 
-- [Your agent eval is silently wrong](blog/2026-10-31-your-agent-eval-is-silently-wrong.md)
+- [Your agent eval is silently wrong](https://laninenterline.github.io/agent-eval-harness/)
   — eight judges, 1,400 calls, and four ways an eval can be silently wrong.
 
 ## Status

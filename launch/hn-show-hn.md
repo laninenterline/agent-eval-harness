@@ -1,6 +1,6 @@
 # Show HN: I benchmarked 8 LLM judges on agent regressions
 
-**URL:** https://github.com/laninenterline/agent-eval-harness/blob/main/blog/2026-10-31-your-agent-eval-is-silently-wrong.md
+**URL:** https://laninenterline.github.io/agent-eval-harness/
 
 **Text:**
 
