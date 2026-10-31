@@ -1,5 +1,6 @@
 # agent-eval-harness
 
+[![PyPI](https://img.shields.io/pypi/v/aehcli.svg)](https://pypi.org/project/aehcli/)
 [![tests](https://github.com/laninenterline/agent-eval-harness/actions/workflows/aeh.yml/badge.svg)](https://github.com/laninenterline/agent-eval-harness/actions/workflows/aeh.yml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
@@ -35,7 +36,7 @@ framework-specific SDK. `aeh` is deliberately the opposite:
 ## Quick start
 
 ```bash
-pip install agent-eval-kit      # from PyPI (after first release)
+pip install aehcli      # from PyPI (after first release)
 # or, from source:
 pip install -e .
 

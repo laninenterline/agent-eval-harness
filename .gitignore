@@ -7,3 +7,4 @@ dist/
 aeh-report*.json
 .pytest_cache/
 .env
+.pypi_name
