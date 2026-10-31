@@ -33,6 +33,16 @@ framework-specific SDK. `aeh` is deliberately the opposite:
 - **Zero heavy dependencies** — one package, stdlib only by default. An LLM
   judge is opt-in via any OpenAI-compatible endpoint.
 
+## Install
+
+| Channel | Command |
+|---|---|
+| **PyPI** | `pip install aehcli` |
+| **Homebrew** | `brew tap laninenterline/tap && brew install aehcli` |
+| **conda-forge** | in review — [staged-recipes#35435](https://github.com/conda-forge/staged-recipes/pull/35435) |
+| **npm** | `npx aehcli --help` (thin wrapper; requires `pip install aehcli`) |
+| **Docker** | `docker run --rm ghcr.io/laninenterline/agent-eval-harness:0.1.0 --help` |
+
 ## Quick start
 
 ```bash
