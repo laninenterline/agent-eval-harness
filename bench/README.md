@@ -53,31 +53,40 @@ naive: output non-empty                0             0      40       0%         
 
 ### Judge model comparison
 
-| model | provider | recall | precision | false alarms | tokens | p50 | suite |
-|---|---|---|---|---|---|---|---|
-| `deepseek-v4-pro` | DeepSeek | 100% | 100% | 0 | 94,951 | 2,200 ms | full (210 calls) |
-| `deepseek-flash` | DeepSeek | 98% | 100% | 0 | 87,273 | **1,560 ms** | full (210 calls) |
-| `glm-5.3` | Zhipu | 100% | 100% | 0 | 90,704 | 3,294 ms | full (210 calls) |
-| `glm-5.3-flash` | Zhipu | 100% | 100% | 0 | **83,999** | 3,121 ms | full (210 calls) |
-| `kimi-k2.6` | Moonshot | 10/10 semantic | — | 0/10 | 14,707 | 19,295 ms | subset (20 calls) |
+| model | provider | recall | precision | false alarms | semantic | tokens | p50 | errors |
+|---|---|---|---|---|---|---|---|---|
+| `deepseek-v4-pro` | DeepSeek | 100% | 100% | 0 | 10/10 | 94,951 | 2,200 ms | 0 |
+| `deepseek-flash` | DeepSeek | 98% | 100% | 0 | 9/10 | 87,273 | **1,560 ms** | 0 |
+| `glm-5.3` | Zhipu | 100% | 100% | 0 | 10/10 | 90,704 | 3,294 ms | 0 |
+| `glm-5.3-flash` | Zhipu | 100% | 100% | 0 | 10/10 | **83,999** | 3,121 ms | 0 |
+| `gemini-3.1-flash-lite` | Google | 85% | 100% | 0 | 4/10 | **47,508** | 2,860 ms | 15 |
+| `kimi-k2.6` | Moonshot | subset | — | 0/10 | 10/10 | 14,707 | 19,295 ms | 0 (20 calls) |
 
-All five judges reach **100% precision with zero false alarms** on the cases they
-ran. They differ on recall of the semantic tail and, heavily, on operational fit:
+Findings:
 
+- **Zero false alarms everywhere.** No judge, on any provider, flagged a healthy
+  run. The differences are entirely about how much of the *semantic* tail each
+  model notices.
 - **`deepseek-flash`** — best default: fastest, 98% recall, zero false alarms.
-- **`deepseek-v4-pro` / `glm-5.3` / `glm-5.3-flash`** — full recall; `glm-5.3-flash`
-  is the most token-efficient. Fine for nightly runs or second-opinion gating.
+- **`glm-5.3-flash`** — full recall and the most token-efficient of the full-suite
+  models. Good for nightly runs.
+- **`gemini-3.1-flash-lite`** — cheapest by tokens, but only catches 4/10 semantic
+  regressions. It is *too forgiving*: a perfectly calibrated judge that never
+  fires is useless. Note: the account also hit rate limits (15 failed calls were
+  excluded from scoring, not counted as failures — see below).
 - **`kimi-k2.6`** — quality is perfect on the subset (0/10 false alarms, 10/10
-  semantic caught) but the account is capped at **3 requests/minute** and each
-  call takes **~19–30 s**. The full 210-call suite would take ~70 minutes, so only
-  a 20-call subset was measured. Kimi is also the only model here that rejects
-  `temperature != 1`, so its scores are non-deterministic run to run.
+  semantic) but the account is capped at **3 requests/minute** and each call
+  takes **~19–30 s**; the full suite would take ~70 min. Kimi also rejects
+  `temperature != 1`, so its verdicts are non-deterministic.
+- **`gemini-3.8-flash`** (newest) timed out at >180 s per call in this
+  environment and could not be evaluated at all.
 
-**Operational lesson:** judge selection is not only about accuracy. Rate limits,
-latency and determinism decide whether a judge can live in CI. A model that is
-perfect on quality but costs 20 s and 3 RPM is a manual tool, not a CI gate.
+**Operational lesson:** judge selection is accuracy × reliability, not accuracy
+alone. A judge that is perfect but rate-limited to 3 RPM is a manual tool; a
+judge that is cheap but blind to the semantic tail is worse than no judge,
+because it creates false confidence.
 
-### A trap worth documenting
+### Three traps worth documenting
 
 Both DeepSeek models are **reasoning models**: reasoning tokens are billed
 against `max_tokens`. With `max_tokens=200` the entire budget is consumed by
@@ -86,10 +95,23 @@ content**, and a naive judge client silently records a score of 0 — which look
 exactly like a regression. This produced a fake "85% precision, 11 false alarms"
 result before it was caught.
 
-Two fixes are now in the client:
+Fixes now in the client:
 
 1. `AEH_JUDGE_MAX_TOKENS` defaults to **1500**, not 200.
 2. `finish_reason == "length"` is treated as a retryable error, never as a score.
+
+**Trap 2 — a judge error is not a regression.** When a call fails (429, timeout),
+the old client returned `score=0.0`, which the benchmark counted as "the agent
+regressed". Gemini's first run reported 80% precision purely from 25 failed
+calls. `Verdict.error` now carries the failure explicitly and the benchmark
+excludes errored verdicts from detection metrics while reporting them separately.
+
+**Trap 3 — provider quirks are part of the API.** Moonshot rejects any
+`temperature != 1`; Gemini's OpenAI-compatible endpoint requires `models/` in the
+model id; both DeepSeek and Kimi are reasoning models whose thinking tokens are
+billed against `max_tokens`. A judge abstraction that assumes one uniform
+convention will produce silently wrong numbers on at least two of the four
+providers tested here.
 
 ## Reading the result
 

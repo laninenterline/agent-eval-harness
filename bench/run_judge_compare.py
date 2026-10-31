@@ -16,7 +16,7 @@ from agent_eval_harness.judge import LLMJudge  # noqa: E402
 
 DATA = Path(__file__).resolve().parent / "data"
 THRESHOLD = 0.5
-WORKERS = 3
+WORKERS = 2
 
 # model -> (base_url, key env var)
 PROVIDERS = {
@@ -28,6 +28,9 @@ PROVIDERS = {
     "glm-4.6": ("https://open.bigmodel.cn/api/paas/v4", "GLM_API_KEY", 0.0),
     # Moonshot rejects temperature != 1 for kimi-k2.6
     "kimi-k2.6": ("https://api.moonshot.cn/v1", "KIMI_API_KEY", 1.0),
+    # Gemini OpenAI-compat endpoint needs the "models/" prefix in the model id
+    "models/gemini-3.1-flash-lite": ("https://generativelanguage.googleapis.com/v1beta/openai",
+                                     "GEMINI_API_KEY", 0.0),
 }
 
 
@@ -89,9 +92,11 @@ def main() -> int:
         pending = [c for c in cases if not deterministic[c.id]]
         deg_judged = judge_cases(pending, deg_traces, judge)
 
-        flagged = det_flagged | {cid for cid, v in deg_judged.items() if v.score < THRESHOLD}
+        deg_ok = {cid: v for cid, v in deg_judged.items() if not v.error}
+        base_ok = {cid: v for cid, v in base_judged.items() if not v.error}
+        flagged = det_flagged | {cid for cid, v in deg_ok.items() if v.score < THRESHOLD}
         m = metrics(flagged, truth)
-        base_flags = {cid for cid, v in base_judged.items() if v.score < THRESHOLD}
+        base_flags = {cid for cid, v in base_ok.items() if v.score < THRESHOLD}
         caught = semantic & flagged
         stats = judge.summary()
         row = {
@@ -100,6 +105,8 @@ def main() -> int:
             "baseline_false_alarms": len(base_flags),
             "semantic_caught": len(caught),
             "semantic_total": len(semantic),
+            "judge_errors": stats["errors"],
+            "judged_ok": stats["calls"],
             **stats,
         }
         rows.append(row)

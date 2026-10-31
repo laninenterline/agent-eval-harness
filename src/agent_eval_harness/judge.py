@@ -19,6 +19,7 @@ from .models import Trace
 class Verdict:
     score: float
     rationale: str = ""
+    error: bool = False
 
 
 class Judge(Protocol):
@@ -160,7 +161,7 @@ class LLMJudge:
                 last_error = error
         with self._lock:
             self.errors += 1
-        return Verdict(0.0, f"judge error: {last_error}")
+        return Verdict(0.0, f"judge error: {last_error}", error=True)
 
     def summary(self) -> dict:
         with self._lock:

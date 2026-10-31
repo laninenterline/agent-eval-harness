@@ -88,5 +88,25 @@
     "total_tokens": 12584,
     "latency_p50_ms": 15592.8,
     "latency_p95_ms": 25671.7
+  },
+  {
+    "model": "models/gemini-3.1-flash-lite",
+    "detected": 34,
+    "false_alarms": 0,
+    "missed": 6,
+    "recall": 0.85,
+    "precision": 1.0,
+    "baseline_false_alarms": 0,
+    "semantic_caught": 4,
+    "semantic_total": 10,
+    "judge_errors": 15,
+    "judged_ok": 195,
+    "calls": 195,
+    "errors": 15,
+    "prompt_tokens": 40670,
+    "completion_tokens": 6838,
+    "total_tokens": 47508,
+    "latency_p50_ms": 2859.5,
+    "latency_p95_ms": 24022.9
   }
 ]
