@@ -7,8 +7,12 @@ from pathlib import Path
 from typing import Any
 
 from .models import Span, Trace
+from .semconv import normalize
 
 TASK_ID_ATTRS = ("aeh.task.id", "gen_ai.conversation.id")
+
+# OTLP StatusCode: 0 = UNSET, 1 = OK, 2 = ERROR
+_STATUS_ERROR = 2
 
 
 def decode_any_value(value: dict[str, Any]) -> Any:
@@ -46,14 +50,21 @@ def parse_spans(raw_spans: list[dict[str, Any]]) -> list[Trace]:
     """Parse a flat list of OTLP span dicts into traces."""
     traces: dict[str, Trace] = {}
     for raw in raw_spans:
+        name = raw.get("name", "")
+        attributes = normalize(decode_attributes(raw.get("attributes")), name)
+
+        status = raw.get("status") or {}
+        if status.get("code") == _STATUS_ERROR and attributes.get("error") is None:
+            attributes["error"] = True
+
         span = Span(
             span_id=raw.get("spanId", ""),
             trace_id=raw.get("traceId", ""),
-            name=raw.get("name", ""),
+            name=name,
             start_ns=_to_ns(raw.get("startTimeUnixNano")),
             end_ns=_to_ns(raw.get("endTimeUnixNano")),
             parent_span_id=raw.get("parentSpanId") or None,
-            attributes=decode_attributes(raw.get("attributes")),
+            attributes=attributes,
         )
         trace = traces.setdefault(span.trace_id, Trace(trace_id=span.trace_id))
         trace.spans.append(span)

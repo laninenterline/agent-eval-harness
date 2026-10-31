@@ -1,0 +1,67 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "nat-workflow"}}]},
+      "scopeSpans": [
+        {
+          "scope": {"name": "nat", "version": "1.0.0"},
+          "spans": [
+            {
+              "traceId": "nat-trace-001",
+              "spanId": "nat-1",
+              "name": "weather_agent",
+              "startTimeUnixNano": "0",
+              "endTimeUnixNano": "2500000000",
+              "attributes": [
+                {"key": "openinference.span.kind", "value": {"stringValue": "AGENT"}},
+                {"key": "aeh.task.id", "value": {"stringValue": "nat-weather-001"}},
+                {"key": "input.value", "value": {"stringValue": "weather in Shanghai"}}
+              ]
+            },
+            {
+              "traceId": "nat-trace-001",
+              "spanId": "nat-2",
+              "parentSpanId": "nat-1",
+              "name": "llm_call",
+              "startTimeUnixNano": "0",
+              "endTimeUnixNano": "900000000",
+              "attributes": [
+                {"key": "openinference.span.kind", "value": {"stringValue": "LLM"}},
+                {"key": "llm.model_name", "value": {"stringValue": "nvidia/llama-3.1-nemotron"}},
+                {"key": "llm.token_count.prompt", "value": {"intValue": "150"}},
+                {"key": "llm.token_count.completion", "value": {"intValue": "60"}},
+                {"key": "output.value", "value": {"stringValue": "I will call get_weather."}}
+              ]
+            },
+            {
+              "traceId": "nat-trace-001",
+              "spanId": "nat-3",
+              "parentSpanId": "nat-1",
+              "name": "get_weather",
+              "startTimeUnixNano": "900000000",
+              "endTimeUnixNano": "1400000000",
+              "attributes": [
+                {"key": "openinference.span.kind", "value": {"stringValue": "TOOL"}}
+              ]
+            },
+            {
+              "traceId": "nat-trace-001",
+              "spanId": "nat-4",
+              "parentSpanId": "nat-1",
+              "name": "llm_call",
+              "startTimeUnixNano": "1400000000",
+              "endTimeUnixNano": "2500000000",
+              "attributes": [
+                {"key": "openinference.span.kind", "value": {"stringValue": "LLM"}},
+                {"key": "llm.model_name", "value": {"stringValue": "nvidia/llama-3.1-nemotron"}},
+                {"key": "llm.token_count.prompt", "value": {"intValue": "200"}},
+                {"key": "llm.token_count.completion", "value": {"intValue": "80"}},
+                {"key": "output.value", "value": {"stringValue": "The weather in Shanghai is 22C and sunny."}}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

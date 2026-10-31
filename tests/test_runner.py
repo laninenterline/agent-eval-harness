@@ -13,10 +13,10 @@ from agent_eval_harness.runner import run  # noqa: E402
 class TestRunnerEndToEnd(unittest.TestCase):
     def test_example_suite_passes(self):
         cases = load_cases(ROOT / "examples" / "cases" / "cases.jsonl")
-        traces = load_traces(ROOT / "examples" / "traces" / "otel_sample.json")
+        traces = load_traces(ROOT / "examples" / "traces")
         report = run(cases, traces, RuleJudge())
-        self.assertEqual(report.total, 2)
-        self.assertEqual(report.passed, 2, [(c.case_id, [k.name for k in c.checks if not k.passed]) for c in report.cases])
+        self.assertEqual(report.total, 3)
+        self.assertEqual(report.passed, 3, [(c.case_id, [k.name for k in c.checks if not k.passed]) for c in report.cases])
         self.assertTrue(report.all_passed)
 
 

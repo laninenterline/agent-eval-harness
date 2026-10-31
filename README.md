@@ -60,7 +60,19 @@ the trace id). Three kinds of checks run:
 3. **Aggregate** — pass rate, per-case latency and token cost, captured in a
    JSON report that is stable enough to diff.
 
+## Supported trace conventions
+
+| Convention | Produced by | Handling |
+|---|---|---|
+| OTel GenAI (`gen_ai.*`) | OpenAI Agents SDK, LangGraph exporters, most OTel setups | native |
+| OpenInference (`openinference.span.kind`, `llm.token_count.*`, `output.value`) | **NVIDIA NeMo Agent Toolkit** (`nat.plugins.opentelemetry`) | normalized in `semconv.py` |
+
+Both are folded into one normalized `gen_ai.*` view before evaluation, so a case
+written once works across frameworks. The NAT mapping was verified against
+`nvidia-nat 1.9.0`'s `span_converter.py`.
+
 ## Where this fits
+
 
 The gap it fills is narrow on purpose: **business-level acceptance of an agent
 run**, not GPU profiling and not model benchmarking.
