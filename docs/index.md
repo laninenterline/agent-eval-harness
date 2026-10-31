@@ -197,6 +197,8 @@ environment over the public internet, so treat it as a relative signal.
 \* Kimi's account is capped at **3 requests/minute** and each call takes ~19–30 s.
 The full suite would have taken ~70 minutes, so only a 20-call subset was run.
 
+![Benchmark table: the deterministic rubric reaches 75% recall with zero false alarms, adding an LLM judge reaches 100%, and the cheapest judge only reaches 85%](img/benchmark.png)
+
 Four things stood out.
 
 ### 1. The smallest model won
@@ -277,10 +279,13 @@ aeh run --cases cases.jsonl --traces ./traces --judge-model nvidia/nemotron-3.5-
 aeh diff before.json after.json     # exits 1 on regression
 ```
 
-Also available as `npx aehcli`, `brew install laninenterline/tap/aehcli`, and
-`docker run ghcr.io/laninenterline/agent-eval-harness:0.1.1`.
 
-- 25 unit tests
+![Terminal screenshot: pip install aehcli, then aeh demo --format plain, showing two passing cases and one failing on token budget](img/demo.png)
+
+Also available as `npx aehcli`, `brew install laninenterline/tap/aehcli`, and
+`docker run ghcr.io/laninenterline/agent-eval-harness:0.1.2`.
+
+- 29 unit tests
 - `aeh judges` lists known providers
 - NVIDIA NeMo Agent Toolkit traces supported via the OpenInference normalization
   layer (verified against `nvidia-nat` 1.9.0)
