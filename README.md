@@ -2,6 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/aehcli.svg)](https://pypi.org/project/aehcli/)
 [![tests](https://github.com/laninenterline/agent-eval-harness/actions/workflows/aeh.yml/badge.svg)](https://github.com/laninenterline/agent-eval-harness/actions/workflows/aeh.yml)
+[![npm](https://img.shields.io/npm/v/aehcli.svg)](https://www.npmjs.com/package/aehcli)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
 
