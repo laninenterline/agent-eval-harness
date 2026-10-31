@@ -98,6 +98,7 @@ semantic):
 | rubric + `glm-5.3-flash` judge | **100% (40/40)** | 100% | 0 |
 | rubric + `gemini-3.1-flash-lite` judge | 85% (34/40) | 100% | 0 |
 | rubric + `nvidia/nemotron-3.5-bolt-e4b` judge | **100% (40/40)** | 100% | 0 |
+| rubric + `nvidia/deepseek-v4.1-flash` judge | **100% (40/40)** | 100% | 0 |
 | rubric + `kimi-k2.6` judge (subset, rate-limited) | 10/10 semantic | — | 0/10 |
 | naive "output non-empty" | 0% | — | 0 |
 

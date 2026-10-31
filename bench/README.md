@@ -84,6 +84,26 @@ Findings:
   `temperature != 1`, so verdicts are non-deterministic.
 - **`gemini-3.8-flash`** timed out at >180 s per call and could not be evaluated.
 
+### Same model, two hosts
+
+`deepseek-flash` is also served by NVIDIA NIM as
+`deepseek-ai/deepseek-v4.1-flash`. Same nominal model, two hosts:
+
+| host | model id | recall | precision | false alarms | tokens | p50 | p95 | errors |
+|---|---|---|---|---|---|---|---|---|
+| DeepSeek direct | `deepseek-flash` | 98% | 100% | 0 | 87,273 | **1,560 ms** | 3,011 ms | 0 |
+| NVIDIA NIM | `nvidia/deepseek-v4.1-flash` | **100%** | 100% | 0 | **51,265** | 6,278 ms | 21,603 ms | 8 |
+
+Hosting changes the numbers materially: **4x the latency**, **~40% fewer tokens**
+(more concise reasoning), and a small (8/210) rate-limit error count. Both reach
+zero false alarms.
+
+Caveat: this is not a clean isolation. The two endpoints expose different
+serving configurations (the NIM variant also has the JSON-mode quirk below), so
+the token difference may reflect generation settings rather than the host. It is
+evidence that "same model name" does not mean "same judge behaviour", not a
+controlled benchmark of hosting quality.
+
 **Operational lesson:** judge selection is accuracy × reliability × cost, not
 accuracy alone. A perfect judge at 3 RPM is a manual tool; a cheap judge that
 misses 60% of semantic regressions is worse than no judge.
@@ -110,10 +130,12 @@ excludes errored verdicts from detection metrics while reporting them separately
 
 **Trap 3 — provider quirks are part of the API.** Moonshot rejects any
 `temperature != 1`; Gemini's OpenAI-compatible endpoint requires `models/` in the
-model id; both DeepSeek and Kimi are reasoning models whose thinking tokens are
-billed against `max_tokens`. A judge abstraction that assumes one uniform
-convention will produce silently wrong numbers on at least two of the four
-providers tested here.
+model id; DeepSeek and Kimi are reasoning models whose thinking tokens are
+billed against `max_tokens`; and the NVIDIA-hosted `deepseek-v4.1-flash`
+returns the answer in `reasoning_content` with `content: null` when JSON mode is
+on. The client now falls back to `reasoning_content` before declaring an empty
+response. A judge abstraction that assumes one uniform convention will produce
+silently wrong numbers on most of the providers tested here.
 
 ## Reading the result
 
