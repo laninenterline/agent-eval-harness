@@ -1,0 +1,202 @@
+[
+  {
+    "task_id": "bench-000",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-003",
+    "bucket": "structural",
+    "failure": "missing_tool"
+  },
+  {
+    "task_id": "bench-004",
+    "bucket": "structural",
+    "failure": "wrong_tool"
+  },
+  {
+    "task_id": "bench-011",
+    "bucket": "structural",
+    "failure": "missing_fact"
+  },
+  {
+    "task_id": "bench-013",
+    "bucket": "structural",
+    "failure": "token_explosion"
+  },
+  {
+    "task_id": "bench-014",
+    "bucket": "structural",
+    "failure": "latency"
+  },
+  {
+    "task_id": "bench-017",
+    "bucket": "structural",
+    "failure": "error_span"
+  },
+  {
+    "task_id": "bench-025",
+    "bucket": "structural",
+    "failure": "missing_tool"
+  },
+  {
+    "task_id": "bench-027",
+    "bucket": "structural",
+    "failure": "wrong_tool"
+  },
+  {
+    "task_id": "bench-028",
+    "bucket": "structural",
+    "failure": "missing_fact"
+  },
+  {
+    "task_id": "bench-029",
+    "bucket": "structural",
+    "failure": "token_explosion"
+  },
+  {
+    "task_id": "bench-030",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-031",
+    "bucket": "structural",
+    "failure": "latency"
+  },
+  {
+    "task_id": "bench-035",
+    "bucket": "structural",
+    "failure": "error_span"
+  },
+  {
+    "task_id": "bench-040",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-047",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-054",
+    "bucket": "structural",
+    "failure": "missing_tool"
+  },
+  {
+    "task_id": "bench-056",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-064",
+    "bucket": "structural",
+    "failure": "wrong_tool"
+  },
+  {
+    "task_id": "bench-067",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-068",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-069",
+    "bucket": "structural",
+    "failure": "missing_fact"
+  },
+  {
+    "task_id": "bench-071",
+    "bucket": "structural",
+    "failure": "token_explosion"
+  },
+  {
+    "task_id": "bench-073",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-075",
+    "bucket": "structural",
+    "failure": "latency"
+  },
+  {
+    "task_id": "bench-077",
+    "bucket": "structural",
+    "failure": "error_span"
+  },
+  {
+    "task_id": "bench-081",
+    "bucket": "structural",
+    "failure": "missing_tool"
+  },
+  {
+    "task_id": "bench-083",
+    "bucket": "structural",
+    "failure": "wrong_tool"
+  },
+  {
+    "task_id": "bench-086",
+    "bucket": "structural",
+    "failure": "missing_fact"
+  },
+  {
+    "task_id": "bench-089",
+    "bucket": "structural",
+    "failure": "token_explosion"
+  },
+  {
+    "task_id": "bench-091",
+    "bucket": "structural",
+    "failure": "latency"
+  },
+  {
+    "task_id": "bench-094",
+    "bucket": "structural",
+    "failure": "error_span"
+  },
+  {
+    "task_id": "bench-099",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  },
+  {
+    "task_id": "bench-102",
+    "bucket": "structural",
+    "failure": "missing_tool"
+  },
+  {
+    "task_id": "bench-106",
+    "bucket": "structural",
+    "failure": "wrong_tool"
+  },
+  {
+    "task_id": "bench-107",
+    "bucket": "structural",
+    "failure": "missing_fact"
+  },
+  {
+    "task_id": "bench-111",
+    "bucket": "structural",
+    "failure": "token_explosion"
+  },
+  {
+    "task_id": "bench-116",
+    "bucket": "structural",
+    "failure": "latency"
+  },
+  {
+    "task_id": "bench-117",
+    "bucket": "structural",
+    "failure": "error_span"
+  },
+  {
+    "task_id": "bench-119",
+    "bucket": "semantic",
+    "failure": "plausible_wrong"
+  }
+]

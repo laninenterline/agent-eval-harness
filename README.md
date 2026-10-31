@@ -84,7 +84,15 @@ run**, not GPU profiling and not model benchmarking.
 | Trace transport | OpenTelemetry GenAI semconv |
 | **Task-level accept/regress** | **nobody, yet** -> this project |
 
+## Benchmark
+
+On a 120-task synthetic model-swap dataset (40 regressions: 30 structural, 10
+semantic), the deterministic layer finds **30/40 with zero false alarms**, while
+naive output checks find **0/40**. The 10 missed cases are semantic — that is the
+bucket the judge layer is for. Details: [`bench/README.md`](bench/README.md).
+
 ## Status
+
 
 v0.1 — OTLP JSON ingestion, deterministic rubric, rule judge, JSON/Markdown
 reports, regression diff, GitHub Action example, one adapter (NVIDIA NAT).
