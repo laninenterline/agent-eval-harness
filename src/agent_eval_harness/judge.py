@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -83,11 +84,18 @@ class LLMJudge:
         "Final output: {output}\n"
     )
 
-    def __init__(self, model: str | None = None, timeout: int = 60) -> None:
+    def __init__(self, model: str | None = None, timeout: int = 120) -> None:
         self.base_url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
         self.api_key = os.environ.get("OPENAI_API_KEY", "")
         self.model = model or os.environ.get("AEH_JUDGE_MODEL", "gpt-4o-mini")
+        self.max_tokens = int(os.environ.get("AEH_JUDGE_MAX_TOKENS", "1500"))
         self.timeout = timeout
+        self._lock = threading.Lock()
+        self.calls = 0
+        self.errors = 0
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.latencies_ms: list[float] = []
         if not self.api_key:
             raise RuntimeError("LLMJudge requires OPENAI_API_KEY (or DEEPSEEK_API_KEY exported as OPENAI_API_KEY)")
 
@@ -114,20 +122,49 @@ class LLMJudge:
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0,
-            "max_tokens": 200,
+            "max_tokens": self.max_tokens,
             "response_format": {"type": "json_object"},
         }
         last_error: Exception | None = None
         for attempt in range(4):
             if attempt:
                 time.sleep(0.3 * (2 ** (attempt - 1)))
+            started = time.perf_counter()
             try:
                 payload = self._post(body)
-                content = (payload["choices"][0]["message"].get("content") or "").strip()
+                elapsed_ms = (time.perf_counter() - started) * 1000
+                choice = payload["choices"][0]
+                if choice.get("finish_reason") == "length":
+                    raise ValueError("judge response truncated by max_tokens (reasoning budget)")
+                content = (choice["message"].get("content") or "").strip()
                 if not content:
                     raise ValueError("empty judge response")
                 parsed = extract_json(content)
+                usage = payload.get("usage") or {}
+                with self._lock:
+                    self.calls += 1
+                    self.prompt_tokens += int(usage.get("prompt_tokens", 0) or 0)
+                    self.completion_tokens += int(usage.get("completion_tokens", 0) or 0)
+                    self.latencies_ms.append(elapsed_ms)
                 return Verdict(float(parsed.get("score", 0.0)), str(parsed.get("rationale", "")))
-            except (urllib.error.URLError, KeyError, ValueError, json.JSONDecodeError) as error:
+            except (urllib.error.URLError, TimeoutError, OSError, KeyError, ValueError, json.JSONDecodeError) as error:
                 last_error = error
+        with self._lock:
+            self.errors += 1
         return Verdict(0.0, f"judge error: {last_error}")
+
+    def summary(self) -> dict:
+        with self._lock:
+            latencies = sorted(self.latencies_ms)
+            count = len(latencies)
+            p50 = latencies[count // 2] if count else 0.0
+            p95 = latencies[int(count * 0.95)] if count else 0.0
+            return {
+                "calls": self.calls,
+                "errors": self.errors,
+                "prompt_tokens": self.prompt_tokens,
+                "completion_tokens": self.completion_tokens,
+                "total_tokens": self.prompt_tokens + self.completion_tokens,
+                "latency_p50_ms": round(p50, 1),
+                "latency_p95_ms": round(p95, 1),
+            }

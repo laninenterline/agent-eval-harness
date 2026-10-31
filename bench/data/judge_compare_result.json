@@ -1,0 +1,38 @@
+[
+  {
+    "model": "deepseek-v4-pro",
+    "detected": 40,
+    "false_alarms": 0,
+    "missed": 0,
+    "recall": 1.0,
+    "precision": 1.0,
+    "baseline_false_alarms": 0,
+    "semantic_caught": 10,
+    "semantic_total": 10,
+    "calls": 210,
+    "errors": 0,
+    "prompt_tokens": 61220,
+    "completion_tokens": 33731,
+    "total_tokens": 94951,
+    "latency_p50_ms": 2199.8,
+    "latency_p95_ms": 3797.7
+  },
+  {
+    "model": "deepseek-flash",
+    "detected": 39,
+    "false_alarms": 0,
+    "missed": 1,
+    "recall": 0.975,
+    "precision": 1.0,
+    "baseline_false_alarms": 0,
+    "semantic_caught": 9,
+    "semantic_total": 10,
+    "calls": 210,
+    "errors": 0,
+    "prompt_tokens": 50510,
+    "completion_tokens": 36763,
+    "total_tokens": 87273,
+    "latency_p50_ms": 1560.1,
+    "latency_p95_ms": 3011.1
+  }
+]

@@ -37,7 +37,8 @@ Ground truth is constructed, so recall and false alarms are exactly measurable.
 
 ## Results
 
-Measured with a real judge (`deepseek-v4-pro`, 210 judge calls, 3 workers):
+Measured with real judges on DeepSeek (210 judge calls per model, 3 workers,
+`AEH_JUDGE_MAX_TOKENS=1500`):
 
 ```
 tasks=120  true_regressions=40 (structural=30, semantic=10)
@@ -45,16 +46,34 @@ tasks=120  true_regressions=40 (structural=30, semantic=10)
 detector                        detected  false_alarms  missed   recall  precision
 ----------------------------------------------------------------------------------
 aeh (deterministic rubric)            30             0      10      75%       100%
-aeh (rubric + LLM judge)              40             7       0     100%        85%
+aeh (rubric + deepseek-v4-pro)        40             0       0     100%       100%
+aeh (rubric + deepseek-flash)         39             0       1      98%       100%
 naive: output non-empty                0             0      40       0%         0%
-
-baseline false alarms (healthy runs): 11/120 (9%)
-semantic regressions caught by judge: 10/10
 ```
 
-Without a judge (rule judge only, keyword overlap), the numbers are identical to
-the deterministic row: a keyword judge cannot separate a confident answer from a
-hedged one, which is the whole point of the semantic bucket.
+### Judge model comparison
+
+| model | recall | precision | semantic caught | tokens | p50 latency | p95 latency |
+|---|---|---|---|---|---|---|
+| `deepseek-v4-pro` | 100% | 100% | 10/10 | 94,951 | 2,200 ms | 3,798 ms |
+| `deepseek-flash` | 98% | 100% | 9/10 | 87,273 | 1,560 ms | 3,011 ms |
+
+`v4-pro` buys the last semantic case for ~40% more latency. `flash` is the better
+default: same precision, 0 false alarms, 1/3 faster.
+
+### A trap worth documenting
+
+Both DeepSeek models are **reasoning models**: reasoning tokens are billed
+against `max_tokens`. With `max_tokens=200` the entire budget is consumed by
+chain-of-thought, the API returns `finish_reason="length"` with **empty
+content**, and a naive judge client silently records a score of 0 — which looks
+exactly like a regression. This produced a fake "85% precision, 11 false alarms"
+result before it was caught.
+
+Two fixes are now in the client:
+
+1. `AEH_JUDGE_MAX_TOKENS` defaults to **1500**, not 200.
+2. `finish_reason == "length"` is treated as a retryable error, never as a score.
 
 ## Reading the result
 

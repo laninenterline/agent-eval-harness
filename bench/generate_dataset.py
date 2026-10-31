@@ -88,13 +88,13 @@ def build_trace(task_id, fact, failure, duration_ms, input_tokens, output_tokens
         spans.append(span(trace_id, "s-2", "search_docs", 100, 200,
                           {"gen_ai.operation.name": "execute_tool", "gen_ai.tool.name": "search_docs"}, "s-1"))
 
-    value = f"v{fact[-3:]}"
+    value = str(1000 + (int(fact[-3:]) * 7919) % 9000)
     if failure == "missing_fact":
         output = "I could not find the result."
     elif failure == "plausible_wrong":
-        output = f"{fact} = {value}, but the source was unavailable so this may be stale."
+        output = f"{fact} = {value} units, but the source was unavailable so this may be stale."
     else:
-        output = f"{fact} = {value}."
+        output = f"{fact} = {value} units."
 
     spans.append(span(trace_id, "s-3", "answer", 200, duration_ms,
                       {"gen_ai.operation.name": "chat", "gen_ai.completion": output}, "s-1"))
@@ -127,7 +127,7 @@ def main():
     for index in range(TASKS):
         task_id = f"bench-{index:03d}"
         fact = f"fact{index:03d}"
-        value = f"v{index:03d}"
+        value = str(1000 + (index * 7919) % 9000)
         cases.append({
             "id": task_id,
             "task": f"Look up {fact} and report its value",
