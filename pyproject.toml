@@ -30,6 +30,7 @@ Homepage = "https://github.com/laninenterline/agent-eval-harness"
 Repository = "https://github.com/laninenterline/agent-eval-harness"
 Issues = "https://github.com/laninenterline/agent-eval-harness/issues"
 Changelog = "https://github.com/laninenterline/agent-eval-harness/releases"
+Documentation = "https://laninenterline.github.io/agent-eval-harness/"
 
 [project.optional-dependencies]
 dev = ["build>=1.0", "twine>=5.0"]
