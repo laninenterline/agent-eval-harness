@@ -14,14 +14,16 @@ jobs:
           python-version: "3.12"
       - name: Install
         run: pip install -e .
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
       - name: Run agent evaluation
-        run: aeh run --cases examples/cases/cases.jsonl --traces examples/traces/otel_sample.json --out aeh-report.json
+        run: aeh run --cases examples/cases/cases.jsonl --traces examples/traces --out aeh-report.json
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
           name: aeh-report
           path: aeh-report.json
-      - name: Regression gate (compare against baseline if present)
+      - name: Regression gate
         run: |
           if [ -f .github/aeh-baseline.json ]; then
             aeh diff .github/aeh-baseline.json aeh-report.json

@@ -1,0 +1,109 @@
+{
+  "summary": {
+    "passed": 3,
+    "total": 3,
+    "pass_rate": 1.0,
+    "missing_traces": []
+  },
+  "cases": [
+    {
+      "case_id": "weather-agent-001",
+      "trace_id": "trace-weather-001",
+      "passed": true,
+      "duration_ms": 1000.0,
+      "total_tokens": 200,
+      "judge": {
+        "score": 0.889,
+        "rationale": "keyword overlap 8/9"
+      },
+      "checks": [
+        {
+          "name": "tool:get_weather",
+          "passed": true,
+          "detail": "called=['get_weather']"
+        },
+        {
+          "name": "output:Shanghai",
+          "passed": true,
+          "detail": "The weather in Shanghai is 22C and sunny. Summarized for the user: warm and clear."
+        },
+        {
+          "name": "tokens",
+          "passed": true,
+          "detail": "200 <= 2000"
+        },
+        {
+          "name": "no_errors",
+          "passed": true,
+          "detail": "0 error span(s)"
+        }
+      ]
+    },
+    {
+      "case_id": "review-002",
+      "trace_id": "trace-review-002",
+      "passed": true,
+      "duration_ms": 3000.0,
+      "total_tokens": 120,
+      "judge": {
+        "score": 0.889,
+        "rationale": "keyword overlap 8/9"
+      },
+      "checks": [
+        {
+          "name": "tool:read_file",
+          "passed": true,
+          "detail": "called=['read_file', 'post_comment']"
+        },
+        {
+          "name": "tool:post_comment",
+          "passed": true,
+          "detail": "called=['read_file', 'post_comment']"
+        },
+        {
+          "name": "output:issues",
+          "passed": true,
+          "detail": "Reviewed the pull request and listed two issues: missing tests, unclear error handling."
+        },
+        {
+          "name": "duration",
+          "passed": true,
+          "detail": "3000ms <= 5000ms"
+        }
+      ]
+    },
+    {
+      "case_id": "nat-weather-001",
+      "trace_id": "nat-trace-001",
+      "passed": true,
+      "duration_ms": 2500.0,
+      "total_tokens": 490,
+      "judge": {
+        "score": 0.625,
+        "rationale": "keyword overlap 5/8"
+      },
+      "checks": [
+        {
+          "name": "tool:get_weather",
+          "passed": true,
+          "detail": "called=['get_weather']"
+        },
+        {
+          "name": "output:Shanghai",
+          "passed": true,
+          "detail": "The weather in Shanghai is 22C and sunny."
+        },
+        {
+          "name": "tokens",
+          "passed": true,
+          "detail": "490 <= 3000"
+        },
+        {
+          "name": "no_errors",
+          "passed": true,
+          "detail": "0 error span(s)"
+        }
+      ]
+    }
+  ]
+}
